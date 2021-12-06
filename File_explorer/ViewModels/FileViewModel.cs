@@ -12,6 +12,7 @@ namespace File_explorer.ViewModels
 
         public FileViewModel(FileInfo fileInfo, string writeTime, string size) : base(fileInfo.Name, writeTime, size)
         {
+            Name = fileInfo.Name;
             FullName = fileInfo.FullName;
             WriteTime = writeTime;
             Size = size;

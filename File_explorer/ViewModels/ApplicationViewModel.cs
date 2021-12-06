@@ -20,7 +20,7 @@ namespace File_explorer.ViewModels
             {
                 string writeTime = Directory.GetLastWriteTime(logicalDrive).ToString();
                 
-                DirectoriesAndFiles.Add(new DirectoryViewModel(logicalDrive, writeTime, ""));
+                DirectoriesAndFiles.Add(new DirectoryViewModel(logicalDrive, writeTime, "Folder"));
             }
         }
         private void Open (object parametr)
@@ -31,11 +31,12 @@ namespace File_explorer.ViewModels
                 FilePath = directoryViewModel.FullName;
                 DirectoriesAndFiles.Clear();
                 var directoryInfo = new DirectoryInfo(FilePath);
-                foreach(var directory in directoryInfo.GetDirectories())
+
+                foreach (var directory in directoryInfo.GetDirectories())
                 {
                     string writeTime = Directory.GetLastWriteTime(directory.FullName).ToString();
 
-                    DirectoriesAndFiles.Add(new DirectoryViewModel(directory, writeTime, ""));
+                    DirectoriesAndFiles.Add(new DirectoryViewModel(directory, writeTime, "Folder"));
                 }
                 foreach (var fileInfo in directoryInfo.GetFiles())
                 {

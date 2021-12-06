@@ -19,8 +19,8 @@
         <tb:TaskbarIcon ToolTipText="File_explorer" Visibility="Visible">
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Развернуть" Click="MenuItem1_Click"/>
-                    <MenuItem Header="Закрыть" Click="MenuItem2_Click"/>
+                    <MenuItem Header="Show" Click="MenuItem1_Click"/>
+                    <MenuItem Header="Exit" Click="MenuItem2_Click"/>
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>
         </tb:TaskbarIcon>
@@ -35,10 +35,10 @@
             </Button>
         </Grid>
 
-        <ListBox Grid.Row="1" 
-                 ItemsSource="{Binding DirectoriesAndFiles}"
-                 SelectedItem="{Binding SelectedEntity}">
-            
+        <DataGrid ItemsSource="{Binding DirectoriesAndFiles}" SelectedItem="{Binding SelectedEntity}"
+                  AutoGenerateColumns="False" IsReadOnly="True" VirtualizingPanel.VirtualizationMode="Recycling" 
+                  VirtualizingPanel.IsVirtualizing="True" BorderThickness="1" HeadersVisibility="Column"
+                  Grid.Row="1" Padding="20 5"  GridLinesVisibility="None">
             <b:Interaction.Triggers>
                 <b:EventTrigger EventName="MouseDoubleClick">
                     <b:InvokeCommandAction
@@ -46,20 +46,12 @@
                         CommandParameter="{Binding SelectedEntity}"/>
                 </b:EventTrigger>
             </b:Interaction.Triggers>
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="300"/>
-                            <ColumnDefinition Width="300"/>
-                            <ColumnDefinition Width="100"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="{Binding Name}"/>
-                        <TextBlock Grid.Column="1" Text="{Binding WriteTime}"/>
-                        <TextBlock Grid.Column="2" Text="{Binding Size}"/>
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="Auto"/>
+                <DataGridTextColumn Header="Path" Binding="{Binding FullName}" Width="Auto"/>
+                <DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="Auto"/>
+                <DataGridTextColumn Header="Date" Binding="{Binding WriteTime}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Window>
