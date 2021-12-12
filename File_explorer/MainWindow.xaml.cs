@@ -3,14 +3,14 @@ using System;
 using System.Diagnostics;
 using System.Windows;
 using System.ComponentModel;
-
+using System.Threading;
 
 namespace File_explorer
 {
     public partial class MainWindow : Window
     {
         bool forceClose = false;
-
+        Mutex mutex = new Mutex(false, "File_explorer");
         public MainWindow()
         {
             InitializeComponent();
@@ -20,6 +20,7 @@ namespace File_explorer
             }
             this.SizeToContent = SizeToContent.Height;
             this.DataContext = new ApplicationViewModel();
+            this.Loaded += new RoutedEventHandler(MainWindow_Loaded);
         }
 
         void DataWindow_Closing(object sender, CancelEventArgs e)
@@ -38,7 +39,9 @@ namespace File_explorer
         private void MenuItem2_Click(object sender, RoutedEventArgs e)
         {
             forceClose = true;
+            mutex.Dispose();
             Close();
+
         }
 
         public static bool IsAdmin()
@@ -67,12 +70,23 @@ namespace File_explorer
             try
             {
                 Process p = Process.Start(startInfo);
+                mutex.Dispose();
                 forceClose = true;
                 this.Close();
             }
             catch (Exception ex)
             {
-                // UAC elevation failed
+                MessageBox.Show("UAC elevation failed: " + ex.Message, "Error");
+            }
+        }
+
+        void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (!mutex.WaitOne(500, false))
+            {
+                MessageBox.Show("Same application's copy is working!", "Error");
+                forceClose = true;
+                Application.Current.Shutdown();
             }
         }
     }
