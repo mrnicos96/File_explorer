@@ -16,7 +16,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <tb:TaskbarIcon ToolTipText="File_explorer" Visibility="Visible">
+        <tb:TaskbarIcon ToolTipText="File_explorer" IconSource="Icons/deviceTray.ico" Visibility="Visible">
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Show" Click="MenuItem1_Click"/>
