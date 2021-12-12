@@ -18,6 +18,7 @@ namespace File_explorer
             {
                 RestartPanel.Visibility = System.Windows.Visibility.Collapsed;
             }
+            this.SizeToContent = SizeToContent.Height;
             this.DataContext = new ApplicationViewModel();
         }
 

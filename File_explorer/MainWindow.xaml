@@ -9,7 +9,7 @@
         Closing="DataWindow_Closing" 
         mc:Ignorable="d"
         Icon="pack://siteoforigin:,,,/Icons/device.ico"
-        Title="File_explorer" Height="450" Width="800">
+        Title="File_explorer" Height="450" Width="600">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
