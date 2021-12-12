@@ -10,7 +10,7 @@ namespace File_explorer
     public partial class MainWindow : Window
     {
         bool forceClose = false;
-        Mutex mutex = new Mutex(false, "File_explorer");
+        readonly Mutex mutex = new Mutex(false, "File_explorer");
         public MainWindow()
         {
             InitializeComponent();

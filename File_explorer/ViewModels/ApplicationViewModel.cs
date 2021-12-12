@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Input;
 using System.Diagnostics;
+using System;
+using System.Windows;
 
 namespace File_explorer.ViewModels
 {
@@ -26,29 +28,37 @@ namespace File_explorer.ViewModels
         private void Open (object parametr)
         {
             parametr = SelectedEntity;
-            if (parametr is DirectoryViewModel directoryViewModel)
+            try
             {
-                FilePath = directoryViewModel.FullName;
-                DirectoriesAndFiles.Clear();
-                var directoryInfo = new DirectoryInfo(FilePath);
-
-                foreach (var directory in directoryInfo.GetDirectories())
+                if (parametr is DirectoryViewModel directoryViewModel)
                 {
-                    string writeTime = Directory.GetLastWriteTime(directory.FullName).ToString();
+                    FilePath = directoryViewModel.FullName;
+                    DirectoriesAndFiles.Clear();
+                    var directoryInfo = new DirectoryInfo(FilePath);
 
-                    DirectoriesAndFiles.Add(new DirectoryViewModel(directory, writeTime, "Folder"));
+                    foreach (var directory in directoryInfo.GetDirectories())
+                    {
+                        string writeTime = Directory.GetLastWriteTime(directory.FullName).ToString();
+
+                        DirectoriesAndFiles.Add(new DirectoryViewModel(directory, writeTime, "Folder"));
+                    }
+                    foreach (var fileInfo in directoryInfo.GetFiles())
+                    {
+                        string writeTime = Directory.GetLastWriteTime(fileInfo.FullName).ToString();
+                        string size = ((fileInfo.Length) / 1024).ToString();
+                        DirectoriesAndFiles.Add(new FileViewModel(fileInfo, writeTime, size));
+                    }
                 }
-                foreach (var fileInfo in directoryInfo.GetFiles())
+                if (parametr is FileViewModel fileViewModel)
                 {
-                    string writeTime = Directory.GetLastWriteTime(fileInfo.FullName).ToString();
-                    string size = ((fileInfo.Length)/1024).ToString();
-                    DirectoriesAndFiles.Add(new FileViewModel (fileInfo, writeTime, size));
+                    Process.Start(fileViewModel.FullName);
                 }
             }
-            if (parametr is FileViewModel fileViewModel)
+            catch (Exception ex)
             {
-                Process.Start(fileViewModel.FullName);                
+                MessageBox.Show("Opening failed: " + ex.Message, "Error");
             }
+            
         }
     }
 }
