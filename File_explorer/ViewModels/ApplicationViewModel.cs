@@ -1,31 +1,91 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿using System;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Windows.Input;
 using System.Diagnostics;
-using System;
+using System.IO;
 using System.Windows;
+using System.Windows.Input;
 
 namespace File_explorer.ViewModels
 {
     partial class ApplicationViewModel : BaseViewModel
     {
-        public string FilePath { get; set; }
+        private string filePath;
+        private readonly IDirectoryHistory _history;
+        private bool OnCanMoveForward(object obj) => _history.CanMoveForward;
+        private bool OnCanMoveBack(object obj) => _history.CanMoveBack;
+
+        public string FilePath
+        {
+            get { return filePath; }
+            set
+            {
+                filePath = value;
+                OnPropertyChanged("FilePath");
+            }
+        }
         public ObservableCollection<FileEnttyViewModel> DirectoriesAndFiles { get; set; } = new ObservableCollection<FileEnttyViewModel>();
         public FileEnttyViewModel SelectedEntity { get; set; }
+
+
         public ICommand OpenCommand { get; }
+        public DelegateCommand MoveBackCommand { get; }
+        public DelegateCommand MoveForwardCommand { get; }
+        public DelegateCommand RefreshCommand { get; }
+
+
         public ApplicationViewModel()
         {
+            _history = new DirectoryHistory("Logical Drives");
+
             OpenCommand = new DelegateCommand(Open);
+            MoveBackCommand = new DelegateCommand(OnMoveBack, OnCanMoveBack);
+            MoveForwardCommand = new DelegateCommand(OnMoveForward, OnCanMoveForward);
+            RefreshCommand = new DelegateCommand(RefreshDiretory);
             foreach (var logicalDrive in Directory.GetLogicalDrives())
             {
                 string writeTime = Directory.GetLastWriteTime(logicalDrive).ToString();
-                
+
                 DirectoriesAndFiles.Add(new DirectoryViewModel(logicalDrive, writeTime, "Folder"));
+
+                FilePath = _history.Current.DirectoryPath;
             }
+
+            _history.HistoryChanged += History_Changed;
         }
-        private void Open (object parametr)
+
+        private void History_Changed(object sender, EventArgs e)
+        {
+            MoveBackCommand?.RaiseCanExecuteChanged();
+            MoveForwardCommand?.RaiseCanExecuteChanged();
+        }
+
+
+
+        private void OnMoveForward(object obj)
+        {
+            _history.MoveForward();
+
+            var curent = _history.Current;
+
+            FilePath = curent.DirectoryPath;
+
+            OpenDiretory();
+        }
+
+
+
+        private void OnMoveBack(object obj)
+        {
+            _history.MoveBack();
+
+            var curent = _history.Current;
+
+            FilePath = curent.DirectoryPath;
+
+            OpenDiretory();
+        }
+
+        private void Open(object parametr)
         {
             parametr = SelectedEntity;
             try
@@ -33,21 +93,11 @@ namespace File_explorer.ViewModels
                 if (parametr is DirectoryViewModel directoryViewModel)
                 {
                     FilePath = directoryViewModel.FullName;
-                    DirectoriesAndFiles.Clear();
-                    var directoryInfo = new DirectoryInfo(FilePath);
 
-                    foreach (var directory in directoryInfo.GetDirectories())
-                    {
-                        string writeTime = Directory.GetLastWriteTime(directory.FullName).ToString();
+                    _history.Add(FilePath);
 
-                        DirectoriesAndFiles.Add(new DirectoryViewModel(directory, writeTime, "Folder"));
-                    }
-                    foreach (var fileInfo in directoryInfo.GetFiles())
-                    {
-                        string writeTime = Directory.GetLastWriteTime(fileInfo.FullName).ToString();
-                        string size = ((fileInfo.Length) / 1024).ToString();
-                        DirectoriesAndFiles.Add(new FileViewModel(fileInfo, writeTime, size));
-                    }
+
+                    OpenDiretory();
                 }
                 if (parametr is FileViewModel fileViewModel)
                 {
@@ -58,7 +108,52 @@ namespace File_explorer.ViewModels
             {
                 MessageBox.Show("Opening failed: " + ex.Message, "Error");
             }
-            
+
+        }
+
+        private void OpenDiretory()
+        {
+            DirectoriesAndFiles.Clear();
+
+            if (FilePath.Contains("Logical Drives"))
+            {
+                foreach (var logicalDrive in Directory.GetLogicalDrives())
+                {
+                    string writeTime = Directory.GetLastWriteTime(logicalDrive).ToString();
+
+                    DirectoriesAndFiles.Add(new DirectoryViewModel(logicalDrive, writeTime, "Folder"));
+
+                    FilePath = _history.Current.DirectoryPath;
+                }
+                return;
+            }
+
+            var directoryInfo = new DirectoryInfo(FilePath);
+
+            foreach (var directory in directoryInfo.GetDirectories())
+            {
+                string writeTime = Directory.GetLastWriteTime(directory.FullName).ToString();
+
+                DirectoriesAndFiles.Add(new DirectoryViewModel(directory, writeTime, "Folder"));
+            }
+            foreach (var fileInfo in directoryInfo.GetFiles())
+            {
+                string writeTime = Directory.GetLastWriteTime(fileInfo.FullName).ToString();
+                string size = ((fileInfo.Length) / 1024).ToString();
+                DirectoriesAndFiles.Add(new FileViewModel(fileInfo, writeTime, size));
+            }
+        }
+
+        private void RefreshDiretory(object obj)
+        {
+            try
+            {
+                OpenDiretory();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Refreshing failed: " + ex.Message, "Error");
+            }
         }
     }
 }

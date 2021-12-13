@@ -5,25 +5,31 @@ namespace File_explorer.ViewModels
 {
     partial class ApplicationViewModel
     {
-        private class DelegateCommand : ICommand
+        public class DelegateCommand : ICommand
         {
-            private Action<object> _open;
+            private Action<object> _execute;
+            private readonly Predicate<object> _canExecute;
 
-            public DelegateCommand(Action<object> open)
+            public DelegateCommand(Action<object> execute, Predicate<Object> canExecute = null)
             {
-                _open = open;
+                _execute = execute;
+                _canExecute = canExecute;
+            }
+
+            
+
+            public bool CanExecute(object parameter) => _canExecute == null || _canExecute.Invoke(parameter);
+
+            public void Execute(object parameter)
+            {
+                _execute?.Invoke(parameter);
             }
 
             public event EventHandler CanExecuteChanged;
 
-            public bool CanExecute(object parameter)
+            public void RaiseCanExecuteChanged()
             {
-                return true;
-            }
-
-            public void Execute(object parameter)
-            {
-                _open?.Invoke(parameter);
+                CanExecuteChanged?.Invoke(this, EventArgs.Empty);
             }
         }
     }

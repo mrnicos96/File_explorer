@@ -16,7 +16,7 @@ namespace File_explorer
             InitializeComponent();
             if (IsAdmin())
             {
-                RestartPanel.Visibility = System.Windows.Visibility.Collapsed;
+                RestartPanel.Visibility = Visibility.Collapsed;
             }
             this.SizeToContent = SizeToContent.Height;
             this.DataContext = new ApplicationViewModel();

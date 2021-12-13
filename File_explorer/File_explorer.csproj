@@ -61,9 +61,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="History\IDirectoryHistory.cs" />
     <Compile Include="ViewModels\ApplicationViewModel.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="Commands\DelegateCommand.cs" />
+    <Compile Include="History\DirectoryHistory.cs" />
     <Compile Include="ViewModels\DirectoryViewModel.cs" />
     <Compile Include="ViewModels\FileEnttyViewModel.cs" />
     <Compile Include="ViewModels\FileViewModel.cs" />
