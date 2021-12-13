@@ -9,8 +9,10 @@ namespace File_explorer
 {
     public partial class MainWindow : Window
     {
-        bool forceClose = false;
+        private bool forceClose = false;
         readonly Mutex mutex = new Mutex(false, "File_explorer");
+
+
         public MainWindow()
         {
             InitializeComponent();
@@ -23,7 +25,8 @@ namespace File_explorer
             this.Loaded += new RoutedEventHandler(MainWindow_Loaded);
         }
 
-        void DataWindow_Closing(object sender, CancelEventArgs e)
+
+        private void DataWindow_Closing(object sender, CancelEventArgs e)
         {
             if (!forceClose)
             {
@@ -36,12 +39,13 @@ namespace File_explorer
                 mutex.Dispose();
             }
         }
-        private void MenuItem1_Click(object sender, RoutedEventArgs e)
+
+        private void ShowCommand(object sender, RoutedEventArgs e)
         {
             Show();
         }
 
-        private void MenuItem2_Click(object sender, RoutedEventArgs e)
+        private void ExitCommand(object sender, RoutedEventArgs e)
         {
             forceClose = true;
             mutex.Dispose();
@@ -49,7 +53,7 @@ namespace File_explorer
 
         }
 
-        public static bool IsAdmin()
+        private static bool IsAdmin()
         {
             System.Security.Principal.WindowsIdentity id = System.Security.Principal.WindowsIdentity.GetCurrent();
             System.Security.Principal.WindowsPrincipal p = new System.Security.Principal.WindowsPrincipal(id);
@@ -85,7 +89,7 @@ namespace File_explorer
             }
         }
 
-        void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             if (!mutex.WaitOne(500, false))
             {

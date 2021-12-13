@@ -6,19 +6,29 @@ namespace File_explorer.ViewModels
 {
     internal class DirectoryHistory : IDirectoryHistory
     {
-        private DirectoryNode _head;
+        #region Private Properties
+
         private void RaiseHistoryChanged() => HistoryChanged?.Invoke(this, EventArgs.Empty);
+        private DirectoryNode _head;
 
-        public event EventHandler HistoryChanged;
+        #endregion
 
+        #region Public Properties
 
         public bool CanMoveBack => Current.PriviousNode != null;
         public bool CanMoveForward => Current.NextNode != null;
 
-
-
         public DirectoryNode Current { get; private set; }
 
+        #endregion
+
+        #region Event
+
+        public event EventHandler HistoryChanged;
+
+        #endregion
+
+        #region Constructor
 
         public DirectoryHistory(string directoryPath)
         {
@@ -26,6 +36,9 @@ namespace File_explorer.ViewModels
             Current = _head;
         }
 
+        #endregion
+
+        #region Public Metods
 
         public void Add(string filePath)
         {
@@ -39,8 +52,6 @@ namespace File_explorer.ViewModels
             RaiseHistoryChanged();
         }
 
-        
-
         public void MoveBack()
         {
             var prev = Current.PriviousNode;
@@ -49,17 +60,17 @@ namespace File_explorer.ViewModels
             RaiseHistoryChanged();
         }
 
-
-
         public void MoveForward()
         {
             var next = Current.NextNode;
             Current = next;
-            
+
             RaiseHistoryChanged();
         }
 
+        #endregion
 
+        #region Enumerator
 
         public IEnumerator<DirectoryNode> GetEnumerator()
         {
@@ -68,5 +79,6 @@ namespace File_explorer.ViewModels
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+        #endregion
     }
 }

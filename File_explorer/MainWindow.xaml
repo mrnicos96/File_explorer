@@ -20,8 +20,8 @@
         <tb:TaskbarIcon ToolTipText="File_explorer" IconSource="Icons/deviceTray.ico" Visibility="Visible">
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Show" Click="MenuItem1_Click"/>
-                    <MenuItem Header="Exit" Click="MenuItem2_Click"/>
+                    <MenuItem Header="Show" Click="ShowCommand"/>
+                    <MenuItem Header="Exit" Click="ExitCommand"/>
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>
         </tb:TaskbarIcon>

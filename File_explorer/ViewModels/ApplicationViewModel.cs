@@ -9,10 +9,16 @@ namespace File_explorer.ViewModels
 {
     partial class ApplicationViewModel : BaseViewModel
     {
+        #region Private Properties 
+
         private string filePath;
         private readonly IDirectoryHistory _history;
         private bool OnCanMoveForward(object obj) => _history.CanMoveForward;
         private bool OnCanMoveBack(object obj) => _history.CanMoveBack;
+
+        #endregion
+
+        #region Properties
 
         public string FilePath
         {
@@ -23,15 +29,23 @@ namespace File_explorer.ViewModels
                 OnPropertyChanged("FilePath");
             }
         }
-        public ObservableCollection<FileEnttyViewModel> DirectoriesAndFiles { get; set; } = new ObservableCollection<FileEnttyViewModel>();
-        public FileEnttyViewModel SelectedEntity { get; set; }
 
+        public FileEnttyViewModel SelectedEntity { get; set; }
 
         public ICommand OpenCommand { get; }
         public DelegateCommand MoveBackCommand { get; }
         public DelegateCommand MoveForwardCommand { get; }
         public DelegateCommand RefreshCommand { get; }
 
+        #endregion
+
+        #region Collections
+
+        public ObservableCollection<FileEnttyViewModel> DirectoriesAndFiles { get; set; } = new ObservableCollection<FileEnttyViewModel>();
+
+        #endregion
+
+        #region Constructor
 
         public ApplicationViewModel()
         {
@@ -53,13 +67,15 @@ namespace File_explorer.ViewModels
             _history.HistoryChanged += History_Changed;
         }
 
+        #endregion
+
+        #region Private Metods
+       
         private void History_Changed(object sender, EventArgs e)
         {
             MoveBackCommand?.RaiseCanExecuteChanged();
             MoveForwardCommand?.RaiseCanExecuteChanged();
         }
-
-
 
         private void OnMoveForward(object obj)
         {
@@ -71,8 +87,6 @@ namespace File_explorer.ViewModels
 
             OpenDiretory();
         }
-
-
 
         private void OnMoveBack(object obj)
         {
@@ -155,5 +169,7 @@ namespace File_explorer.ViewModels
                 MessageBox.Show("Refreshing failed: " + ex.Message, "Error");
             }
         }
+
+        #endregion
     }
 }
