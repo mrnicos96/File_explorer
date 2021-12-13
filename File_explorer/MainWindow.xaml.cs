@@ -30,6 +30,11 @@ namespace File_explorer
                 e.Cancel = true;
                 Hide();
             }
+            else
+            {
+                forceClose = true;
+                mutex.Dispose();
+            }
         }
         private void MenuItem1_Click(object sender, RoutedEventArgs e)
         {
